@@ -1,5 +1,5 @@
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
-use crossterm::event::{read, Event::Key, KeyEvent, KeyModifiers, KeyCode::Char};
+use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers };
 use crossterm::execute;
 use std::io::stdout;
 
@@ -25,18 +25,34 @@ impl Editor {
     // read - evaluate - print
     fn repl(&mut self) -> Result<(), std::io::Error> {
         loop {
-            if let Key(KeyEvent{code, modifiers, kind, state}) = read()? {
-                println!("Code: {code:?}, Modifiers: {modifiers:?}, Kind: {kind:?}, State: {state:?}\r");
-                match code {
-                    Char('q') if modifiers == KeyModifiers::CONTROL => {
-                        self.should_quit = true
-                    }
-                    _ => (),
-                }
-            }
-            if self.should_quit {
+            let event = read()?;
+            self.evaluate_event(&event);
+            self.refresh_screen()?;
+            if self.should_quit == true {
                 break;
             }
+        }
+        Ok(())
+    }
+
+    fn evaluate_event(&mut self, event: &Event) {
+        if let Key(KeyEvent{code, modifiers, ..}) = event {
+            match code {
+                Char('q') if *modifiers == KeyModifiers::CONTROL => {
+                    self.should_quit = true;
+                } 
+                Char(val) => {
+                    print!("{}\r\n", val);
+                }
+                _ => (),
+            }
+        }
+    }
+
+    fn refresh_screen(&self) -> Result<(), std::io::Error> {
+        if self.should_quit {
+            Self::clear_screen()?;
+            println!("Programa finalizado exitosamente");
         }
         Ok(())
     }
