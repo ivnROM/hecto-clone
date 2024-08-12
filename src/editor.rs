@@ -1,7 +1,7 @@
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
 use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers };
 use crossterm::execute;
-use std::io::stdout;
+use std::io::{stdout};
 
 pub struct Editor {
     should_quit: bool,
@@ -13,13 +13,12 @@ impl Editor {
         Editor{ should_quit: false }
     }
 
-
     pub fn run(&mut self) {
         Self::initialize().unwrap();
         let result = self.repl();
         Self::terminate().unwrap();
         result.unwrap();
-        println!("El programa finalizó correctamente");
+        print!("El programa finalizó correctamente\r\n");
     }
     
     // read - evaluate - print
