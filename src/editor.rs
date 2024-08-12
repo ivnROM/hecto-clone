@@ -1,22 +1,21 @@
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, Clear, ClearType};
+mod terminal;
+
 use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers };
-use crossterm::execute;
-use std::io::{stdout};
+use terminal::Terminal;
 
 pub struct Editor {
     should_quit: bool,
 }
 
-impl Editor {
-    
+impl Editor { 
     pub fn default() -> Editor {
         Editor{ should_quit: false }
     }
 
     pub fn run(&mut self) {
-        Self::initialize().unwrap();
+        Terminal::initialize().unwrap();
         let result = self.repl();
-        Self::terminate().unwrap();
+        Terminal::terminate().unwrap();
         result.unwrap();
         print!("El programa finalizó correctamente\r\n");
     }
@@ -24,6 +23,7 @@ impl Editor {
     // read - evaluate - print
     fn repl(&mut self) -> Result<(), std::io::Error> {
         loop {
+            Terminal::draw_rows();
             let event = read()?;
             self.evaluate_event(&event);
             self.refresh_screen()?;
@@ -50,25 +50,11 @@ impl Editor {
 
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
         if self.should_quit {
-            Self::clear_screen()?;
-            println!("Programa finalizado exitosamente");
+            Terminal::clear_screen()?;
+            println!("Programa finalizado exitosamente\r\n");
         }
         Ok(())
     }
 
-    fn initialize() -> Result<(), std::io::Error> {
-        enable_raw_mode()?;
-        Self::clear_screen()
-    }
-
-    fn terminate() -> Result<(), std::io::Error> {
-        disable_raw_mode()?;
-        Self::clear_screen()
-    }
-
-    fn clear_screen() -> Result<(), std::io::Error> {
-        let mut stdout = stdout();
-        execute!(stdout, Clear(ClearType::All))
-    }
 }
 
