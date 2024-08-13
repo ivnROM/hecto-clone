@@ -29,16 +29,4 @@ impl Terminal {
     pub fn size() -> Result<(u16, u16), std::io::Error> {
         size()
     }
-
-    // TODO 
-    // MOVER LA FUNCION DE ABAJO AL IMPL DEL EDITOR
-    //
-    //pub fn draw_rows() -> Result<(), std::io::Error>{
-    //    let (_x, y) = size()?;
-    //    for _ in 0..=y {
-    //        execute!(stdout(), MoveTo(0, y))?;
-    //        println!("~ ");
-    //    }
-    //    Ok(())
-    //}
 }
