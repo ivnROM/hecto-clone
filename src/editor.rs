@@ -14,6 +14,9 @@ impl Editor {
 
     pub fn run(&mut self) {
         Terminal::initialize().unwrap();
+        // TODO
+        // REAJUSTAR LOS CODIGOS COMENTADOS
+        //Terminal::draw_rows().unwrap();
         let result = self.repl();
         Terminal::terminate().unwrap();
         result.unwrap();
@@ -23,7 +26,6 @@ impl Editor {
     // read - evaluate - print
     fn repl(&mut self) -> Result<(), std::io::Error> {
         loop {
-            Terminal::draw_rows();
             let event = read()?;
             self.evaluate_event(&event);
             self.refresh_screen()?;
@@ -51,7 +53,6 @@ impl Editor {
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
         if self.should_quit {
             Terminal::clear_screen()?;
-            println!("Programa finalizado exitosamente\r\n");
         }
         Ok(())
     }

@@ -1,5 +1,5 @@
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, size, Clear, ClearType};
-use crossterm::cursor;
+use crossterm::cursor::MoveTo;
 use crossterm::execute;
 use std::io::stdout;
 
@@ -8,22 +8,37 @@ pub struct Terminal{}
 impl Terminal {
     pub fn initialize() -> Result<(), std::io::Error> {
         enable_raw_mode()?;
-        Self::clear_screen()
+        Self::clear_screen()?;
+        Self::move_cursor_to(0, 0)
     }
 
     pub fn terminate() -> Result<(), std::io::Error> {
         disable_raw_mode()?;
-        Self::clear_screen()
+        Self::clear_screen()?;
+        Self::move_cursor_to(0, 0)
     }
 
     pub fn clear_screen() -> Result<(), std::io::Error> {
-        let mut stdout = stdout();
-        execute!(stdout, Clear(ClearType::All))
+        execute!(stdout(), Clear(ClearType::All))
+    } 
+
+    pub fn move_cursor_to(col: u16, row: u16) -> Result<(), std::io::Error> {
+        execute!(stdout(), MoveTo(col, row))
     }
 
-    pub fn draw_rows() {
-        let (x, y) = size().unwrap();
-        println!("x = {x}, y = {y}");
-        cursor::MoveTo(1, 1);
+    pub fn size() -> Result<(u16, u16), std::io::Error> {
+        size()
     }
+
+    // TODO 
+    // MOVER LA FUNCION DE ABAJO AL IMPL DEL EDITOR
+    //
+    //pub fn draw_rows() -> Result<(), std::io::Error>{
+    //    let (_x, y) = size()?;
+    //    for _ in 0..=y {
+    //        execute!(stdout(), MoveTo(0, y))?;
+    //        println!("~ ");
+    //    }
+    //    Ok(())
+    //}
 }
