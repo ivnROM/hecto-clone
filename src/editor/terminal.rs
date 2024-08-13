@@ -14,8 +14,7 @@ impl Terminal {
 
     pub fn terminate() -> Result<(), std::io::Error> {
         disable_raw_mode()?;
-        Self::clear_screen()?;
-        Self::move_cursor_to(0, 0)
+        Self::clear_screen()
     }
 
     pub fn clear_screen() -> Result<(), std::io::Error> {

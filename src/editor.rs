@@ -8,32 +8,27 @@ pub struct Editor {
 }
 
 impl Editor { 
-    pub fn default() -> Editor {
-        Editor{ should_quit: false }
+    pub const fn default() -> Self {
+        Self { should_quit: false }
     }
 
     pub fn run(&mut self) {
         Terminal::initialize().unwrap();
-        let sucessrows = self.draw_rows();
         let result = self.repl();
         Terminal::terminate().unwrap();
-        sucessrows.unwrap();
         result.unwrap();
         print!("El programa finalizó correctamente\r\n");
     }
     
     // read - evaluate - print
     fn repl(&mut self) -> Result<(), std::io::Error> {
-        let mut row = 0;
         loop {
-            Terminal::move_cursor_to(2, row).unwrap();
-            let event = read()?;
-            self.evaluate_event(&event);
             self.refresh_screen()?;
             if self.should_quit == true {
                 break;
             }
-            row += 1;
+            let event = read()?;
+            self.evaluate_event(&event);
         }
         Ok(())
     }
@@ -52,21 +47,26 @@ impl Editor {
         }
     }
 
-    fn draw_rows(&self) -> Result<(), std::io::Error>{
-        let (_x, y) = size()?;
-        for i in 0..=y {
-            Terminal::move_cursor_to(0, i).unwrap();
-            print!("~ ")
-        }
-        Ok(())
-    }
-
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
         if self.should_quit {
             Terminal::clear_screen()?;
+            print!("Goodbye\r\n")
+        } else {
+            Self::draw_rows()?;
+            Terminal::move_cursor_to(0, 0)?;
         }
         Ok(())
     }
 
+    fn draw_rows() -> Result<(), std::io::Error>{
+        let y = size()?.1;
+        for i in 0..=y {
+            print!("~ ");
+            if i + 1 < y {
+                print!("\r\n");
+            }
+        }
+        Ok(())
+    }
 }
 
