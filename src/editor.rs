@@ -1,7 +1,7 @@
 mod terminal;
 use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers };
-use crossterm::terminal::size;
 use terminal::Terminal;
+use std::io::Error;
 
 pub struct Editor {
     should_quit: bool,
@@ -17,11 +17,11 @@ impl Editor {
         let result = self.repl();
         Terminal::terminate().unwrap();
         result.unwrap();
-        print!("El programa finalizó correctamente\r\n");
+        Terminal::print_out("El programa finalizó correctamente\r\n").unwrap();
     }
     
     // read - evaluate - print
-    fn repl(&mut self) -> Result<(), std::io::Error> {
+    fn repl(&mut self) -> Result<(), Error> {
         loop {
             self.refresh_screen()?;
             if self.should_quit == true {
@@ -34,13 +34,14 @@ impl Editor {
     }
 
     fn evaluate_event(&mut self, event: &Event) {
+        Terminal::clear_line().unwrap();
         if let Key(KeyEvent{code, modifiers, ..}) = event {
             match code {
                 Char('q') if *modifiers == KeyModifiers::CONTROL => {
                     self.should_quit = true;
                 } 
                 Char(val) => {
-                    print!("{}", val);
+                    Terminal::print_out(&val.to_string()).unwrap();
                 }
                 _ => (),
             }
@@ -48,22 +49,24 @@ impl Editor {
     }
 
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
+        Terminal::hide_cursor()?;
         if self.should_quit {
             Terminal::clear_screen()?;
-            print!("Goodbye\r\n")
+            Terminal::print_out("Goodbye\r\n")?;
         } else {
             Self::draw_rows()?;
             Terminal::move_cursor_to(0, 0)?;
         }
+        Terminal::show_cursor()?;
         Ok(())
     }
 
-    fn draw_rows() -> Result<(), std::io::Error>{
-        let y = size()?.1;
+    fn draw_rows() -> Result<(), Error>{
+        let y = Terminal::size()?.1;
         for i in 0..=y {
-            print!("~ ");
+            Terminal::print_out("~")?;
             if i + 1 < y {
-                print!("\r\n");
+                Terminal::print_out("\r\n")?;
             }
         }
         Ok(())
