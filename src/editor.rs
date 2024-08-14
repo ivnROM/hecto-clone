@@ -71,6 +71,17 @@ impl Editor {
                 Terminal::print_out("\r\n")?;
             }
         }
+        Self::display_name()?;
+        Ok(())
+    }
+
+    fn display_name() -> Result<(), Error> {
+        let Size{height, width} = Terminal::size()?;
+        //let width = width / 2; esto deberia andar????
+        let height = height / 10;
+        Terminal::move_cursor_to(Position{x: width, y: height})?;
+        Terminal::print_out("Hecto: 0.1.1")?;
+        Terminal::move_cursor_to(Position{x: 0, y: 0})?;
         Ok(())
     }
 }

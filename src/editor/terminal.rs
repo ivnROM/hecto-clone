@@ -12,8 +12,8 @@ pub struct Position {
 
 #[derive(Clone, Copy)]
 pub struct Size {
+   pub width: u16,
    pub height: u16,
-   pub _width: u16,
 }
 
 pub struct Terminal{}
@@ -60,6 +60,6 @@ impl Terminal {
 
     pub fn size() -> Result<Size, Error> {
         let (h, w) = size()?;
-        Ok(Size {height: h, _width: w})
+        Ok(Size {height: h, width: w})
     }
 }
