@@ -10,7 +10,7 @@ pub struct Position {
     pub y: u16
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Size {
    pub width: u16,
    pub height: u16,

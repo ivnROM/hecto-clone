@@ -52,7 +52,7 @@ impl Editor {
         Terminal::hide_cursor()?;
         if self.should_quit {
             Terminal::clear_screen()?;
-            Terminal::print_out("Goodbye\r\n")?;
+            //Terminal::print_out("Goodbye\r\n")?;
         } else {
             Self::draw_rows()?;
             Terminal::move_cursor_to(Position{x: 0, y: 0})?;
@@ -78,6 +78,7 @@ impl Editor {
     fn display_name() -> Result<(), Error> {
         let Size{height, width} = Terminal::size()?;
         //let width = width / 2; esto deberia andar????
+        let width = width * 2;
         let height = height / 10;
         Terminal::move_cursor_to(Position{x: width, y: height})?;
         Terminal::print_out("Hecto: 0.1.1")?;
