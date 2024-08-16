@@ -3,6 +3,9 @@ use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModi
 use terminal::{Terminal, Position, Size};
 use std::io::Error;
 
+const NAME: &str = env!("CARGO_PKG_NAME");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub struct Editor {
     should_quit: bool,
 }
@@ -76,12 +79,13 @@ impl Editor {
     }
 
     fn display_name() -> Result<(), Error> {
-        let Size{height, width} = Terminal::size()?;
-        //let width = width / 2; esto deberia andar????
-        let width = width * 2;
-        let height = height / 10;
+        let width = Terminal::size()?.width as usize;
+        let height = Terminal::size()?.height as usize;
+        let edition = format!("{NAME}: {VERSION}");
+        let len = edition.len();
+        let padding = (width - len) / 2;
         Terminal::move_cursor_to(Position{x: width, y: height})?;
-        Terminal::print_out("Hecto: 0.1.1")?;
+        Terminal::print_out(&string)?;
         Terminal::move_cursor_to(Position{x: 0, y: 0})?;
         Ok(())
     }
